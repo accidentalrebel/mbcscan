@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from mbclib.mbclib import setup_src
+from mbclib.mbclib import setup_src, get_behavior_by_id
 from argparse import ArgumentParser
 
 if __name__ == '__main__':
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
 
-    src = setup_src()
+    src = setup_src('./mbclib/mbc-stix2/')
 
     if args.id:
         if 'malware--' in args.id:
@@ -27,7 +27,7 @@ if __name__ == '__main__':
             print('[ERROR] ID ' + args.id + ' is not valid.')
             raise SystemExit(1)
     elif args.externalid:
-        behavior = get_behavior_by_external_id(src, args.externalid)
+        behavior = mbclib.get_behavior_by_external_id(src, args.externalid)
         if behavior:
             print(str(behavior))
         else:
