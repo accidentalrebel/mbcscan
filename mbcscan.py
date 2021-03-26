@@ -23,14 +23,15 @@ if __name__ == '__main__':
 
     print('Behavior Details:\n' \
           '=================\n' \
-          'Name:\t' + behavior.name + '\n' \
-          'MBC_ID:\t' + behavior.id + '\n' \
-          'Desc:\t' + behavior.description)
+          'Name:\t\t' + behavior.name + '\n' \
+          'MBC_ID:\t\t' + behavior.id + '\n' \
+          'Description:\n' + behavior.description)
 
     if behavior.x_mitre_is_subtechnique:
-        rels = get_behavior_relationships(src, behavior.id)
-        for r in rels:
-            print(str(r))
+        parent = get_parent_behavior(src, behavior.id)
+        parent_eid = get_mbc_external_id(parent)
+        print('\nParents:\t' + parent.name + ' (' + parent_eid + ')')
+        # print(str(parent))
 
     sys.exit()
 
