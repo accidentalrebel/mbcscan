@@ -24,9 +24,8 @@ if __name__ == '__main__':
     print('Behavior Details:\n' \
           '=================\n' \
           'Name:\t\t' + behavior.name + '\n' \
-          'MBC_ID:\t\t' + behavior.id + '\n' \
-          'Description:\n' + behavior.description + '\n')
-    
+          'MBC_ID:\t\t' + behavior.id)
+
     if behavior.kill_chain_phases:
         phase_str = 'Objectives:\t'
         for phase in behavior.kill_chain_phases:
@@ -35,13 +34,20 @@ if __name__ == '__main__':
             if obj:
                 obj_eid = get_mbc_external_id(obj)
                 phase_str += obj.name + ' (' + obj_eid + ')'
-        print(phase_str)
 
     if behavior.x_mitre_is_subtechnique:
         parent = get_parent_behavior(src, behavior.id)
         if parent:
             parent_eid = get_mbc_external_id(parent)
-            print('Related:\t' + parent.name + ' (' + parent_eid + ')')
+            print('Parent:\t' + parent.name + ' (' + parent_eid + ')')
+
+    print('\nDescription:\n' + behavior.description + '\n')
+
+    if behavior.external_references:
+        print('External references:')
+        for ref in behavior.external_references:
+            if ref.url:
+                print('- ' + ref.url)
 
     sys.exit()
 
