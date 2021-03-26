@@ -41,7 +41,7 @@ if __name__ == '__main__':
         parent = get_parent_behavior(src, behavior.id)
         if parent:
             parent_eid = get_mbc_external_id(parent)
-            print('Parents:\t' + parent.name + ' (' + parent_eid + ')')
+            print('Related:\t' + parent.name + ' (' + parent_eid + ')')
 
     sys.exit()
 
