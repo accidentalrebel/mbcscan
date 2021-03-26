@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from mbclib.mbclib import setup_src, get_behavior_by_id
+from mbclib.mbclib import *
 from argparse import ArgumentParser
 
 if __name__ == '__main__':
@@ -11,28 +11,26 @@ if __name__ == '__main__':
     parser.add_argument('-e',
                         '--externalid',
                         help='The external ID to search for.')
-    
+
     args = parser.parse_args()
 
     src = setup_src('./mbclib/mbc-stix2/')
 
-    if args.id:
-        if 'malware--' in args.id:
-            malware = get_malware_by_id(src, args.id)
-            print(str(malware))
-        elif 'attack-pattern--' in args.id:
-            behavior = get_behavior_by_id(src, args.id)
-            print(str(behavior))
-        else:
-            print('[ERROR] ID ' + args.id + ' is not valid.')
-            raise SystemExit(1)
-    elif args.externalid:
-        behavior = mbclib.get_behavior_by_external_id(src, args.externalid)
-        if behavior:
-            print(str(behavior))
-        else:
-            print('[ERROR] ExternalID ' + args.externalId + ' is not valid.')
-            raise SystemExit(1)
+    behavior = get_behavior_by_external_id(src, args.externalid)
+    if not behavior:
+        print('[ERROR] ExternalID ' + args.externalId + ' is not valid.')
+        raise SystemExit(1)
+
+    print('Behavior Details:\n' \
+          '=================\n' \
+          'Name:\t' + behavior.name + '\n' \
+          'MBC_ID:\t' + behavior.id + '\n' \
+          'Desc:\t' + behavior.description)
+
+    if behavior.x_mitre_is_subtechnique:
+        rels = get_behavior_relationships(src, behavior.id)
+        for r in rels:
+            print(str(r))
 
     sys.exit()
 
