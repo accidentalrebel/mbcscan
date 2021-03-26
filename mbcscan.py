@@ -39,15 +39,17 @@ if __name__ == '__main__':
         parent = get_parent_behavior(src, behavior.id)
         if parent:
             parent_eid = get_mbc_external_id(parent)
-            print('Parent:\t' + parent.name + ' (' + parent_eid + ')')
+            print('Parent:\t\t' + parent.name + ' (' + parent_eid + ')')
 
     print('\nDescription:\n' + behavior.description + '\n')
 
+    i = 0
     if behavior.external_references:
         print('External references:')
         for ref in behavior.external_references:
             if ref.url:
-                print('- ' + ref.url)
+                print('[' + str(i) + '] ' + ref.url)
+                i += 1
 
     sys.exit()
 
