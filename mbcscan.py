@@ -3,17 +3,24 @@ import cmd, sys
 from mbclib.mbclib import *
 from argparse import ArgumentParser
 
-args = None
+g_args = None
+g_behaviors_list = None
+
+def print_behaviors_list(lst):
+    print(str(lst))
 
 class MBCScanShell(cmd.Cmd):
     intro = 'Intro. Type "?" for help.'
     prompt = '(prompt) '
 
+    def do_print_behaviors_list(self, arg):
+        print_behaviors_list(g_behaviors_list)
+
     def do_print_behavior(self, arg):
         'Prints behavior details'
-        behavior = get_behavior_by_external_id(src, args.externalid)
+        behavior = get_behavior_by_external_id(src, g_args.externalid)
         if not behavior:
-            print('[ERROR] ExternalID ' + args.externalId + ' is not valid.')
+            print('[ERROR] ExternalID ' + g_args.externalId + ' is not valid.')
             raise SystemExit(1)
 
         print('Behavior Details:\n' \
@@ -61,9 +68,12 @@ if __name__ == '__main__':
                         '--externalid',
                         help='The external ID to search for.')
 
-    args = parser.parse_args()
+    g_args = parser.parse_args()
 
     src = setup_src('./mbclib/mbc-stix2/')
+
+    g_behaviors_list = { 'OB0004', 'OB0003', 'OC0008' }
+    print_behaviors_list(g_behaviors_list)
 
     MBCScanShell().cmdloop()
     
