@@ -51,7 +51,9 @@ def print_behaviors_list(behavior_list, can_show_all=False):
             print('')
             print_obj_details(behavior)
         else:
-            print('[' + str(i) + '] ' + behavior.name + ' (' + behavior_external_id + ')');
+            phase_name = behavior.kill_chain_phases[0].phase_name
+            obj = get_objective_by_shortname(g_src, phase_name)
+            print('[' + str(i) + '] ' + obj.name + '::' + behavior.name + ' (' + behavior_external_id + ')');
             
         i+=1
 
@@ -65,14 +67,18 @@ def print_obj_details(obj):
           + ('=' * 80) + '\n' \
           'MBC_ID:\t\t' + obj.id)
 
+    s = 'Objectives:\t'
     if hasattr(obj, 'kill_chain_phases'):
-        phase_str = 'Objectives:\t'
+
         for phase in obj.kill_chain_phases:
             phase_shortname = phase.phase_name
             obj = get_objective_by_shortname(g_src, phase_shortname)
             if obj:
                 obj_eid = get_mbc_external_id(obj)
-                phase_str += obj.name + ' (' + obj_eid + ')'
+                s += obj.name + ' (' + obj_eid + ')'
+    else:
+        s += 'None'
+    print(s)
 
     s = 'Parent:\t\t'
     if hasattr(obj, 'x_mitre_is_subtechnique'):
@@ -181,11 +187,12 @@ if __name__ == '__main__':
     
     capa = capa_details('test.bin')
     if len(capa['MBC']) > 0:
-        for d in capa['MBC']['DATA']:
-            external_ids = re.findall('\[(.*?)\]', d)
-            if len(external_ids) > 0:
-                external_id = external_ids[0]
-                g_behaviors_list.append(external_id)
+        for mbc_key in capa['MBC'].keys():
+            for d in capa['MBC'][mbc_key]:
+                external_ids = re.findall('\[(.*?)\]', d)
+                if len(external_ids) > 0:
+                    external_id = external_ids[0]
+                    g_behaviors_list.append(external_id)
     else:
         print('No MBC determined from file.')
         sys.exit()
