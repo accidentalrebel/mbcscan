@@ -30,8 +30,9 @@ def get_malwares_using_behavior(src, behavior_id):
 
 def print_behaviors_list(behavior_list, can_show_all=False):
     i = 0
-    print('Behaviors list:\n' \
-          '===============')
+    print(('=' * 80) + '\n'+ \
+          'Behaviors list:\n' + \
+          ('=' * 80))
     
     for behavior_external_id in behavior_list:
         behavior = get_behavior_by_external_id(g_src, behavior_external_id)
@@ -115,14 +116,15 @@ class MBCScanShell(cmd.Cmd):
         'Selects and displays the details of a particular behavior.'
         if not arg:
             print('[ERROR] No selection index number specified. Try again.')
-        elif not type(arg) is int:
-            print('[ERROR] Selection index number should be a number. Try again.')
         else:
-            selection_index = int(arg)
-            behavior = list(g_behaviors_dict.values())[selection_index]
-            print('')
-            print_behavior_details(behavior)
-            print('')
+            try:
+                selection_index = int(arg)
+                behavior = list(g_behaviors_dict.values())[selection_index]
+                print('')
+                print_behavior_details(behavior)
+                print('')
+            except ValueError:
+                print('[ERROR] Selection index should be a number. Try again.')
 
     def do_query(self, arg):
         'Queries and prints the detail by external_id.'
