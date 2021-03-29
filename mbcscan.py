@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+import os
+from git.repo.base import Repo
+
+if not os.path.isdir('./mbclib'):
+    print('Installing mbclib...')
+    Repo.clone_from("https://github.com/accidentalrebel/mbclib", "mbclib")
+if not os.path.isdir('./mbclib/mbc-stix2'):
+    print('Installing mbc-stix2...')
+    Repo.clone_from("https://github.com/MBCProject/mbc-stix2", "./mbclib/mbc-stix2")
+if not os.path.isdir('./capalib/capa-rules'):
+    print('Installing capa-rules...')
+    Repo.clone_from("https://github.com/fireeye/capa-rules", "./capalib/capa-rules")
+
 import cmd, sys
 import mbclib
 import re

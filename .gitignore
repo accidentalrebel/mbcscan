@@ -2,3 +2,5 @@
 /mbc-stix2/
 /__pycache__/
 /capa/
+/capalib/__pycache__/
+/capalib/capa-rules/
