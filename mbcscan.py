@@ -1,11 +1,32 @@
 #!/usr/bin/env python3
 import cmd, sys
-from mbclib.mbclib import *
+from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior
+import mbclib
 from argparse import ArgumentParser
 
 g_args = None
 g_behaviors_list = None
 g_behaviors_dict = {}
+g_objectives_dict = {}
+
+def get_obj_cached(src, dict_to_check, id_to_check, func_to_call):
+    if id_to_check in dict_to_check.keys():
+        obj = dict_to_check[id_to_check]
+    else:
+        obj = func_to_call(src, id_to_check)
+        if not obj:
+            print('[ERROR] ' + id_to_check + ' is not valid.')
+            raise SystemExit(1)
+        
+        dict_to_check[id_to_check] = obj
+    
+    return obj
+    
+def get_behavior_by_external_id(src, behavior_external_id):
+    return get_obj_cached(src, g_behaviors_dict, behavior_external_id, mbclib.mbclib.get_behavior_by_external_id)
+
+def get_objective_by_shortname(src, phase_shortname):
+    return get_obj_cached(src, g_objectives_dict, phase_shortname, mbclib.mbclib.get_objective_by_shortname)
 
 def print_behaviors_list(behavior_list, can_show_all=False):
     i = 0
@@ -13,16 +34,7 @@ def print_behaviors_list(behavior_list, can_show_all=False):
           '===============')
     
     for behavior_external_id in behavior_list:
-        if behavior_external_id in g_behaviors_dict.keys():
-            behavior = g_behaviors_dict[behavior_external_id]
-        else:
-            behavior = get_behavior_by_external_id(g_src, behavior_external_id)
-            if not behavior:
-                print('[ERROR] ExternalID ' + behavior_external_id + ' is not valid.')
-                raise SystemExit(1)
-
-            g_behaviors_dict[behavior_external_id] = behavior
-
+        behavior = get_behavior_by_external_id(g_src, behavior_external_id)
         if can_show_all:
             print('')
             print_behavior_details(behavior)
