@@ -46,7 +46,7 @@ def print_behavior_details(behavior):
         parent = get_parent_behavior(src, behavior.id)
         if parent:
             parent_eid = get_mbc_external_id(parent)
-            print('Parent:\t\t' + parent.name + ' (' + parent_eid + ')')
+            print('Objectives:\t\t' + parent.name + ' (' + parent_eid + ')')
 
     print('\nDescription:\n' + behavior.description + '\n')
 
@@ -59,12 +59,16 @@ def print_behavior_details(behavior):
                 i += 1
 
 class MBCScanShell(cmd.Cmd):
-    intro = 'Intro. Type "?" for help.'
+    intro = 'Type "?" or "help" to display help.'
     prompt = '(prompt) '
 
     def do_list(self, arg):
         'Lists the determined behaviors on the file.'
         print_behaviors_list(g_behaviors_list)
+
+    def do_ls(self, arg):
+        'Lists the determined behaviors on the file.'
+        self.do_list(arg)
 
     def do_select(self, arg):
         'Selects and displays the details of a particular behavior.'
@@ -72,10 +76,10 @@ class MBCScanShell(cmd.Cmd):
         behavior = list(g_behaviors_dict.values())[selection_index]
         print_behavior_details(behavior)
 
-    def do_print_behavior(self, arg):
-        'Prints behavior details'
-        print_behavior_details()
-        
+    def do_s(self, arg):
+        'Selects and displays the details of a particular behavior.'
+        self.do_select(arg)
+
     def do_exit(self, arg):
         'Exits the program'
         return True
