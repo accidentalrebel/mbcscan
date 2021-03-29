@@ -13,7 +13,7 @@ def print_behaviors_list(behavior_list):
         if behavior_external_id in g_behaviors_dict.keys():
             behavior = g_behaviors_dict[behavior_external_id]
         else:
-            behavior = get_behavior_by_external_id(src, behavior_external_id)
+            behavior = get_behavior_by_external_id(g_src, behavior_external_id)
             if not behavior:
                 print('[ERROR] ExternalID ' + behavior_external_id + ' is not valid.')
                 raise SystemExit(1)
@@ -37,26 +37,24 @@ def print_behavior_details(behavior):
         phase_str = 'Objectives:\t'
         for phase in behavior.kill_chain_phases:
             phase_shortname = phase.phase_name
-            obj = get_objective_by_shortname(src, phase_shortname)
+            obj = get_objective_by_shortname(g_src, phase_shortname)
             if obj:
                 obj_eid = get_mbc_external_id(obj)
                 phase_str += obj.name + ' (' + obj_eid + ')'
 
     if behavior.x_mitre_is_subtechnique:
-        parent = get_parent_behavior(src, behavior.id)
+        parent = get_parent_behavior(g_src, behavior.id)
         if parent:
             parent_eid = get_mbc_external_id(parent)
-            print('Objectives:\t\t' + parent.name + ' (' + parent_eid + ')')
+            print('Parent:\t\t' + parent.name + ' (' + parent_eid + ')')
 
     print('\nDescription:\n' + behavior.description + '\n')
 
-    i = 0
     if behavior.external_references:
         print('External references:')
         for ref in behavior.external_references:
             if ref.url:
-                print('[' + str(i) + '] ' + ref.url)
-                i += 1
+                print('- ' + ref.url)
 
 class MBCScanShell(cmd.Cmd):
     intro = 'Type "?" or "help" to display help.'
@@ -75,6 +73,16 @@ class MBCScanShell(cmd.Cmd):
         selection_index = int(arg)
         behavior = list(g_behaviors_dict.values())[selection_index]
         print_behavior_details(behavior)
+
+    def do_query(self, arg):
+        'Queries and prints the detail by external_id.'
+        behavior = get_behavior_by_external_id(g_src, arg.upper())
+        if behavior:
+            print_behavior_details(behavior)
+        else:
+            objective = get_objective_by_external_id(g_src, arg.upper())
+            if objective:
+                print_behavior_details(objective)
 
     def do_s(self, arg):
         'Selects and displays the details of a particular behavior.'
@@ -97,7 +105,7 @@ if __name__ == '__main__':
 
     g_args = parser.parse_args()
 
-    src = setup_src('./mbclib/mbc-stix2/')
+    g_src = setup_src('./mbclib/mbc-stix2/')
 
     g_behaviors_list = { 'C0016.001', 'C0012.002', 'E1010' }
     print_behaviors_list(g_behaviors_list)
