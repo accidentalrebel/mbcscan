@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import cmd, sys
 import mbclib
+import re
+from capalib.capalib import *
 from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id
 from argparse import ArgumentParser
 
@@ -175,8 +177,18 @@ if __name__ == '__main__':
     g_args = parser.parse_args()
 
     g_src = setup_src('./mbclib/mbc-stix2/')
-
-    g_behaviors_list = { 'C0016.001', 'C0012.002', 'E1010' }
+    g_behaviors_list = []
+    
+    capa = capa_details('test.bin')
+    if len(capa['MBC']) > 0:
+        for d in capa['MBC']['DATA']:
+            external_ids = re.findall('\[(.*?)\]', d)
+            if len(external_ids) > 0:
+                external_id = external_ids[0]
+                g_behaviors_list.append(external_id)
+    else:
+        print('No MBC determined from file.')
+        sys.exit()
 
     if g_args.query:
         obj = query(g_args.query)
