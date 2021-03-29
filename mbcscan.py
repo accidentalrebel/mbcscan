@@ -62,9 +62,19 @@ def print_behavior_details(behavior):
                 obj_eid = get_mbc_external_id(obj)
                 phase_str += obj.name + ' (' + obj_eid + ')'
 
+    s = 'Parent:\t\t'
+    if behavior.x_mitre_is_subtechnique:
+        parent = get_parent_behavior(g_src, behavior.id)
+        if parent:
+            parent_eid = get_mbc_external_id(parent)
+            s += parent.name + ' (' + parent_eid + ')'
+    else:
+        s += 'None'
+    print(s)
+
+    s = 'Malwares:\t'                
     malwares = get_malwares_using_behavior(g_src, behavior.id)
     if malwares:
-        s = 'Malwares:\t'
         i = 0
         for m in malwares:
             external_id = get_mbc_external_id(m)
@@ -72,14 +82,9 @@ def print_behavior_details(behavior):
             i += 1
             if i < len(malwares):
                 s += ', '
-
-        print(s)
-
-    if behavior.x_mitre_is_subtechnique:
-        parent = get_parent_behavior(g_src, behavior.id)
-        if parent:
-            parent_eid = get_mbc_external_id(parent)
-            print('Parent:\t\t' + parent.name + ' (' + parent_eid + ')')
+    else:
+        s += 'None'
+    print(s)
 
     print('\nDescription:\n' + behavior.description + '\n')
 
