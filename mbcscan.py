@@ -48,9 +48,9 @@ def print_behavior_details(behavior):
         print('[ERROR] ExternalID ' + g_args.externalId + ' is not valid.')
         raise SystemExit(1)
 
-    print('Behavior Details:\n' \
-          '=================\n' \
+    print(('=' * 80) + '\n' \
           'Name:\t\t' + behavior.name + '\n' \
+          + ('=' * 80) + '\n' \
           'MBC_ID:\t\t' + behavior.id)
 
     if behavior.kill_chain_phases:
@@ -72,7 +72,7 @@ def print_behavior_details(behavior):
         s += 'None'
     print(s)
 
-    s = 'Malwares:\t'                
+    s = 'Samples:\t'                
     malwares = get_malwares_using_behavior(g_src, behavior.id)
     if malwares:
         i = 0
@@ -86,13 +86,15 @@ def print_behavior_details(behavior):
         s += 'None'
     print(s)
 
-    print('\nDescription:\n' + behavior.description + '\n')
+    print('\nDescription:\t' + behavior.description + '\n')
 
     if behavior.external_references:
         print('External references:')
         for ref in behavior.external_references:
             if ref.url:
                 print('- ' + ref.url)
+
+    print(('-' * 80) + '\n')
 
 class MBCScanShell(cmd.Cmd):
     intro = 'Type "?" or "help" to display help.'
