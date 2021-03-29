@@ -5,9 +5,21 @@ from argparse import ArgumentParser
 
 g_args = None
 g_behaviors_list = None
+g_behavior_dict = {}
 
-def print_behaviors_list(lst):
-    print(str(lst))
+def print_behaviors_list(behavior_list):
+    for behavior_external_id in behavior_list:
+        if behavior_external_id in g_behavior_dict.keys():
+            behavior = g_behavior_dict[behavior_external_id]
+        else:
+            behavior = get_behavior_by_external_id(src, behavior_external_id)
+            if not behavior:
+                print('[ERROR] ExternalID ' + behavior_external_id + ' is not valid.')
+                raise SystemExit(1)
+
+            g_behavior_dict[behavior_external_id] = behavior
+
+        print('behavior: ' + behavior.name + ' (' + behavior_external_id + ')');
 
 class MBCScanShell(cmd.Cmd):
     intro = 'Intro. Type "?" for help.'
@@ -72,7 +84,7 @@ if __name__ == '__main__':
 
     src = setup_src('./mbclib/mbc-stix2/')
 
-    g_behaviors_list = { 'OB0004', 'OB0003', 'OC0008' }
+    g_behaviors_list = { 'C0016.001', 'C0012.002', 'E1010' }
     print_behaviors_list(g_behaviors_list)
 
     MBCScanShell().cmdloop()
