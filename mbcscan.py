@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 import cmd, sys
-from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior
 import mbclib
+from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior
 from argparse import ArgumentParser
 
 g_args = None
 g_behaviors_list = None
 g_behaviors_dict = {}
 g_objectives_dict = {}
+g_malwares_dict = {}
 
 def get_obj_cached(src, dict_to_check, id_to_check, func_to_call):
     if id_to_check in dict_to_check.keys():
         obj = dict_to_check[id_to_check]
     else:
         obj = func_to_call(src, id_to_check)
-        if not obj:
-            print('[ERROR] ' + id_to_check + ' is not valid.')
-            raise SystemExit(1)
-        
         dict_to_check[id_to_check] = obj
     
     return obj
@@ -27,6 +24,9 @@ def get_behavior_by_external_id(src, behavior_external_id):
 
 def get_objective_by_shortname(src, phase_shortname):
     return get_obj_cached(src, g_objectives_dict, phase_shortname, mbclib.mbclib.get_objective_by_shortname)
+
+def get_malwares_using_behavior(src, behavior_id):
+    return get_obj_cached(src, g_malwares_dict, behavior_id, mbclib.mbclib.get_malwares_using_behavior)
 
 def print_behaviors_list(behavior_list, can_show_all=False):
     i = 0
@@ -62,6 +62,19 @@ def print_behavior_details(behavior):
                 obj_eid = get_mbc_external_id(obj)
                 phase_str += obj.name + ' (' + obj_eid + ')'
 
+    malwares = get_malwares_using_behavior(g_src, behavior.id)
+    if malwares:
+        s = 'Malwares:\t'
+        i = 0
+        for m in malwares:
+            external_id = get_mbc_external_id(m)
+            s += m.name + ' (' + external_id + ')'
+            i += 1
+            if i < len(malwares):
+                s += ', '
+
+        print(s)
+
     if behavior.x_mitre_is_subtechnique:
         parent = get_parent_behavior(g_src, behavior.id)
         if parent:
@@ -93,9 +106,14 @@ class MBCScanShell(cmd.Cmd):
 
     def do_select(self, arg):
         'Selects and displays the details of a particular behavior.'
-        selection_index = int(arg)
-        behavior = list(g_behaviors_dict.values())[selection_index]
-        print_behavior_details(behavior)
+        if not arg:
+            print('[ERROR] No selection index number specified. Try again.')
+        else:
+            selection_index = int(arg)
+            behavior = list(g_behaviors_dict.values())[selection_index]
+            print('')
+            print_behavior_details(behavior)
+            print('')
 
     def do_query(self, arg):
         'Queries and prints the detail by external_id.'
@@ -106,6 +124,10 @@ class MBCScanShell(cmd.Cmd):
             objective = get_objective_by_external_id(g_src, arg.upper())
             if objective:
                 print_behavior_details(objective)
+
+    def do_q(self, args):
+        'Queries and prints the detail by external_id.'
+        self.do_query(args)
 
     def do_s(self, arg):
         'Selects and displays the details of a particular behavior.'
