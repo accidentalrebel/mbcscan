@@ -94,7 +94,7 @@ def print_behavior_details(behavior):
             if ref.url:
                 print('- ' + ref.url)
 
-    print(('-' * 80) + '\n')
+    print(('-' * 80))
 
 class MBCScanShell(cmd.Cmd):
     intro = 'Type "?" or "help" to display help.'
@@ -115,6 +115,8 @@ class MBCScanShell(cmd.Cmd):
         'Selects and displays the details of a particular behavior.'
         if not arg:
             print('[ERROR] No selection index number specified. Try again.')
+        elif not type(arg) is int:
+            print('[ERROR] Selection index number should be a number. Try again.')
         else:
             selection_index = int(arg)
             behavior = list(g_behaviors_dict.values())[selection_index]
