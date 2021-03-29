@@ -7,8 +7,11 @@ g_args = None
 g_behaviors_list = None
 g_behaviors_dict = {}
 
-def print_behaviors_list(behavior_list):
+def print_behaviors_list(behavior_list, can_show_all=False):
     i = 0
+    print('Behaviors list:\n' \
+          '===============')
+    
     for behavior_external_id in behavior_list:
         if behavior_external_id in g_behaviors_dict.keys():
             behavior = g_behaviors_dict[behavior_external_id]
@@ -20,7 +23,12 @@ def print_behaviors_list(behavior_list):
 
             g_behaviors_dict[behavior_external_id] = behavior
 
-        print('[' + str(i) + '] ' + behavior.name + ' (' + behavior_external_id + ')');
+        if can_show_all:
+            print('')
+            print_behavior_details(behavior)
+        else:
+            print('[' + str(i) + '] ' + behavior.name + ' (' + behavior_external_id + ')');
+            
         i+=1
 
 def print_behavior_details(behavior):
@@ -61,8 +69,11 @@ class MBCScanShell(cmd.Cmd):
     prompt = '(prompt) '
 
     def do_list(self, arg):
-        'Lists the determined behaviors on the file.'
-        print_behaviors_list(g_behaviors_list)
+        'Lists the determined behaviors on the file. Use "ls a" to list down the details.'
+        can_show_all = False
+        if arg == 'a' or arg == 'all':
+            can_show_all = True
+        print_behaviors_list(g_behaviors_list, can_show_all)
 
     def do_ls(self, arg):
         'Lists the determined behaviors on the file.'
