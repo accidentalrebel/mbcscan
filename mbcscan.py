@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 import os
+import time
 from git.repo.base import Repo
 
 if not os.path.isdir('./mbclib'):
-    print('Installing mbclib...')
+    print('[INFO] Installing mbclib...')
     Repo.clone_from("https://github.com/accidentalrebel/mbclib", "mbclib")
 if not os.path.isdir('./mbclib/mbc-stix2'):
-    print('Installing mbc-stix2...')
+    print('[INFO] Installing mbc-stix2...')
     Repo.clone_from("https://github.com/MBCProject/mbc-stix2", "./mbclib/mbc-stix2")
 if not os.path.isdir('./capalib/capa-rules'):
-    print('Installing capa-rules...')
+    print('[INFO] Installing capa-rules...')
     Repo.clone_from("https://github.com/fireeye/capa-rules", "./capalib/capa-rules")
+
+    for root, dirs, files in os.walk("./capalib/capa-rules"):
+        for file in files:
+            if not file.endswith(".yml"):
+                filepath = os.path.join(root, file)
+                os.remove(filepath)
 
 import cmd, sys
 import mbclib
@@ -179,7 +186,7 @@ class MBCScanShell(cmd.Cmd):
         'Exits the program'
         return True
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     parser = ArgumentParser(description='MBC Tool')
     parser.add_argument('-i',
                         '--interactive',
@@ -193,12 +200,17 @@ if __name__ == '__main__':
                         '--query',
                         help='The external ID to search for.')
 
+    print('[INFO] Setting up mbc database...')
+    
     g_args = parser.parse_args()
-
     g_src = setup_src('./mbclib/mbc-stix2/')
     g_behaviors_list = []
+
+    fname = 'test.bin'
+    print('[INFO] Scanning ' + fname + '...')
     
-    capa = capa_details('test.bin')
+    capa = capa_details(fname)
+
     if len(capa['MBC']) > 0:
         for mbc_key in capa['MBC'].keys():
             for d in capa['MBC'][mbc_key]:
