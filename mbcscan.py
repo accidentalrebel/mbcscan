@@ -146,7 +146,13 @@ def print_obj_details(obj):
     print(('-' * 80))
 
 class MBCScanShell(cmd.Cmd):
-    intro = 'Type "?" or "help" to display help.'
+    intro = """    __  ___ ____   ______ _____                   
+   /  |/  // __ ) / ____// ___/ _____ ____ _ ____ 
+  / /|_/ // __  |/ /     \__ \ / ___// __ `// __ \\
+ / /  / // /_/ // /___  ___/ // /__ / /_/ // / / /
+/_/  /_//_____/ \____/ /____/ \___/ \__,_//_/ /_/ 
+
+    Type "?" r "help" to display help."""
     prompt = '(mbcscan) '
 
     def do_list(self, arg):
@@ -231,6 +237,7 @@ if __name__ == '__main__':
         print('No MBC determined from file.')
         sys.exit()
 
-    print_behaviors_list(g_behaviors_list, g_args.all)
     if g_args.interactive:
         MBCScanShell().cmdloop()
+
+    print_behaviors_list(g_behaviors_list, g_args.all)

@@ -24,16 +24,17 @@ optional arguments:
 It is recommended to run the program interactively:
 
 ```console
-$ ./mbcscan.py -i test.bin
+$ python3 mbcscan.py -i test.bin
 [INFO] Setting up mbc database...
 [INFO] Scanning test.bin...
-================================================================================
-Behaviors list:
-================================================================================
-[0] Data Micro-objective::Check String (C0019)
-[1] Data Micro-objective::Base64::Encode Data (C0026.001)
-Type "?" or "help" to display help.
-(mbcscan) Type command here
+    __  ___ ____   ______ _____                   
+   /  |/  // __ ) / ____// ___/ _____ ____ _ ____ 
+  / /|_/ // __  |/ /     \__ \ / ___// __ `// __ \
+ / /  / // /_/ // /___  ___/ // /__ / /_/ // / / /
+/_/  /_//_____/ \____/ /____/ \___/ \__,_//_/ /_/ 
+
+    Type "?" r "help" to display help.
+(mbcscan)  Type command here
 ```
 
 Type the help command to find out available commands:
