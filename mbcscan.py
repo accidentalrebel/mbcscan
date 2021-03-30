@@ -150,18 +150,18 @@ class MBCScanShell(cmd.Cmd):
     prompt = '(mbcscan) '
 
     def do_list(self, arg):
-        'Lists the determined behaviors on the file. Use "ls a" to list down the details.'
+        'Lists the determined behaviors related to the file.'
         can_show_all = False
         if arg == 'a' or arg == 'all':
             can_show_all = True
         print_behaviors_list(g_behaviors_list, can_show_all)
 
     def do_l(self, arg):
-        'Lists the determined behaviors on the file.'
+        'Lists the determined behaviors related to the file.'
         self.do_list(None)
 
     def do_a(self, arg):
-        'Lists all the determined behaviors on the file.'
+        'Lists full details of all determined behaviors related to the file.'
         self.do_list('all')
 
     def do_select(self, arg):
@@ -174,23 +174,23 @@ class MBCScanShell(cmd.Cmd):
             except ValueError:
                 print('[ERROR] Selection index should be a number. Try again.')
 
+    def do_s(self, arg):
+        'Selects and displays the details of a particular behavior.'
+        self.do_select(arg)
+
     def do_query(self, arg):
-        'Queries and prints the details by id or external_id.'
+        'Queries and prints the details of a behavior, objective, or malware by "id" or "external id".'
         obj = query(arg)
         if obj:
             print_obj_details(obj)
         return obj
 
     def do_q(self, args):
-        'Queries and prints the detail by external_id.'
+        'Queries and prints the details of a behavior, objective, or malware by "id" or "external id".'
         self.do_query(args)
 
-    def do_s(self, arg):
-        'Selects and displays the details of a particular behavior.'
-        self.do_select(arg)
-
     def do_exit(self, arg):
-        'Exits the program'
+        'Exits the program.'
         return True
 
 if __name__ == '__main__':
