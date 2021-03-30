@@ -59,6 +59,17 @@ def query(query_str):
 
     return obj
 
+def select(index):
+    selection_index = int(index)
+    if selection_index >= len(g_behaviors_dict.values()):
+        print('[Error] Selection index ' + str(selection_index) + ' does not exist.')
+        return 
+    
+    behavior = list(g_behaviors_dict.values())[selection_index]
+    print('')
+    print_obj_details(behavior)
+    print('')
+
 def print_behaviors_list(behavior_list, can_show_all=False):
     i = 0
     print(('=' * 80) + '\n'+ \
@@ -136,7 +147,7 @@ def print_obj_details(obj):
 
 class MBCScanShell(cmd.Cmd):
     intro = 'Type "?" or "help" to display help.'
-    prompt = '(prompt) '
+    prompt = '(mbcscan) '
 
     def do_list(self, arg):
         'Lists the determined behaviors on the file. Use "ls a" to list down the details.'
@@ -159,11 +170,7 @@ class MBCScanShell(cmd.Cmd):
             print('[ERROR] No selection index number specified. Try again.')
         else:
             try:
-                selection_index = int(arg)
-                behavior = list(g_behaviors_dict.values())[selection_index]
-                print('')
-                print_obj_details(behavior)
-                print('')
+                select(arg)
             except ValueError:
                 print('[ERROR] Selection index should be a number. Try again.')
 
