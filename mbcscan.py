@@ -237,7 +237,8 @@ if __name__ == '__main__':
         print('No MBC determined from file.')
         sys.exit()
 
+    print_behaviors_list(g_behaviors_list, g_args.all)
+    
     if g_args.interactive:
         MBCScanShell().cmdloop()
 
-    print_behaviors_list(g_behaviors_list, g_args.all)
