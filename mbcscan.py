@@ -194,7 +194,7 @@ class MBCScanShell(cmd.Cmd):
         return True
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='MBC Tool')
+    parser = ArgumentParser(description='Scans a malware file and lists down the related MBC (Malware Behavior Catalog) details.')
     parser.add_argument('file',
                         help='Path of file to scan.')
     parser.add_argument('-i',
@@ -205,13 +205,14 @@ if __name__ == '__main__':
                         '--all',
                         action='store_true',
                         help='List all findings in one page.')
-    parser.add_argument('-q',
-                        '--query',
-                        help='The external ID to search for.')
+    # parser.add_argument('-q',
+    #                     '--query',
+    #                     help='The external ID to search for.')
+
+    g_args = parser.parse_args()
 
     print('[INFO] Setting up mbc database...')
     
-    g_args = parser.parse_args()
     g_src = setup_src('./mbclib/mbc-stix2/')
     g_behaviors_list = []
 
@@ -230,10 +231,6 @@ if __name__ == '__main__':
         print('No MBC determined from file.')
         sys.exit()
 
-    if g_args.query:
-        obj = query(g_args.query)
-        print_obj_details(obj)
-    else:
-        print_behaviors_list(g_behaviors_list, g_args.all)
-        if g_args.interactive:
-            MBCScanShell().cmdloop()
+    print_behaviors_list(g_behaviors_list, g_args.all)
+    if g_args.interactive:
+        MBCScanShell().cmdloop()
