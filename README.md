@@ -129,3 +129,23 @@ External references:
 
 * [Capa](https://github.com/fireeye/capa) - MBCScan uses the related MBR behaviors that Capa detects from the given file
 * [mbclib](https://github.com/accidentalrebel/mbclib) - Library for querying STIX data from the the MBC-Stix2 repository
+
+
+## How to Install
+
+First install, `flare-capa` via `pip install flare-capa`. MBCScan uses Capa as a Python library.
+
+Clone the repository and then run the `mbcscan.py` script. The script would automatically download and configure it's dependencies.
+
+```console
+$ git clone https://github.com/accidentalrebel/mbcscan.git
+$ cd mbscan/
+$ python3 ./mbscan.py
+[INFO] Installing mbclib...
+[INFO] Installing mbc-stix2...
+[INFO] Installing capa-rules...
+usage: mbcscan.py [-h] [-i] [-a] file
+```
+
+## Contributing
+Feel free to submit a pull request if you want to improve this tool!
