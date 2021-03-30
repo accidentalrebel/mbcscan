@@ -195,6 +195,8 @@ class MBCScanShell(cmd.Cmd):
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='MBC Tool')
+    parser.add_argument('file',
+                        help='Path of file to scan.')
     parser.add_argument('-i',
                         '--interactive',
                         action='store_true',
@@ -213,10 +215,9 @@ if __name__ == '__main__':
     g_src = setup_src('./mbclib/mbc-stix2/')
     g_behaviors_list = []
 
-    fname = 'test.bin'
-    print('[INFO] Scanning ' + fname + '...')
+    print('[INFO] Scanning ' + g_args.file + '...')
     
-    capa = capa_details(fname)
+    capa = capa_details(g_args.file)
 
     if len(capa['MBC']) > 0:
         for mbc_key in capa['MBC'].keys():
