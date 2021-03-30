@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-import time
 from git.repo.base import Repo
 
 if not os.path.isdir('./mbclib'):
@@ -22,6 +21,7 @@ if not os.path.isdir('./capalib/capa-rules'):
 import cmd, sys
 import mbclib
 import re
+import textwrap
 from capalib.capalib import *
 from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id, get_children_of_behavior
 from argparse import ArgumentParser
@@ -152,10 +152,18 @@ def print_obj_details(obj):
     print(s)
 
     if hasattr(obj, 'description'):
-        print('\nDescription:\t' + obj.description + '\n')
+        desc_splitted = textwrap.wrap(obj.description, 65)
+        s = '\nDescription:\t'
+        i = 0
+        for d in desc_splitted:
+            if i > 0:
+                s += '\t\t'
+            s += d + '\n'
+            i += 1
+        print(s)
 
     if obj.external_references:
-        print('\nExternal references:')
+        print('External references:')
         for ref in obj.external_references:
             if ref.url:
                 print('- ' + ref.url)
