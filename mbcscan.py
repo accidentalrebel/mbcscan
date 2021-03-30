@@ -151,7 +151,8 @@ def print_obj_details(obj):
         s += 'None'
     print(s)
 
-    print('\nDescription:\t' + obj.description + '\n')
+    if hasattr(obj, 'description'):
+        print('\nDescription:\t' + obj.description + '\n')
 
     if obj.external_references:
         print('\nExternal references:')
