@@ -23,7 +23,7 @@ import cmd, sys
 import mbclib
 import re
 from capalib.capalib import *
-from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id
+from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id, get_children_of_behavior
 from argparse import ArgumentParser
 
 g_args = None
@@ -84,7 +84,7 @@ def print_behaviors_list(behavior_list, can_show_all=False):
         else:
             phase_name = behavior.kill_chain_phases[0].phase_name
             obj = get_objective_by_shortname(g_src, phase_name)
-            print('[' + str(i) + '] ' + obj.name + '::' + behavior.name + ' (' + behavior_external_id + ')');
+            print('(' + str(i) + ') [' + behavior_external_id + ']\t' + obj.name + '::' + behavior.name)
             
         i+=1
 
@@ -96,27 +96,43 @@ def print_obj_details(obj):
     print(('=' * 80) + '\n' \
           'Name:\t\t' + obj.name + '\n' \
           + ('=' * 80) + '\n' \
-          'MBC_ID:\t\t' + obj.id)
+          'MBC_ID:\t\t' + obj.id + '\n' \
+          'External ID:\t' + get_mbc_external_id(obj))
 
     s = 'Objectives:\t'
     if hasattr(obj, 'kill_chain_phases'):
-
         for phase in obj.kill_chain_phases:
             phase_shortname = phase.phase_name
-            obj = get_objective_by_shortname(g_src, phase_shortname)
-            if obj:
-                obj_eid = get_mbc_external_id(obj)
-                s += obj.name + ' (' + obj_eid + ')'
+            o = get_objective_by_shortname(g_src, phase_shortname)
+            if o:
+                obj_eid = get_mbc_external_id(o)
+                s += '[' + obj_eid + '] ' + o.name
     else:
         s += 'None'
     print(s)
 
+    parent = None
     s = 'Parent:\t\t'
     if hasattr(obj, 'x_mitre_is_subtechnique'):
-        parent = get_parent_obj(g_src, obj.id)
+        parent = get_parent_behavior(g_src, obj.id)
         if parent:
             parent_eid = get_mbc_external_id(parent)
-            s += parent.name + ' (' + parent_eid + ')'
+            s += '[' + parent_eid + '] ' + parent.name
+        else:
+            s += 'None'
+    else:
+        s += 'None'
+    print(s)
+
+    s = 'Related:\t'
+    if parent:
+        behaviors = get_children_of_behavior(g_src, parent.id)
+        i = 0
+        for b in behaviors:
+            obj_eid = get_mbc_external_id(b)
+            s += '[' + obj_eid + '] ' + b.name
+            if i < len(behaviors):
+                s += ', '
     else:
         s += 'None'
     print(s)
@@ -127,7 +143,7 @@ def print_obj_details(obj):
         i = 0
         for m in malwares:
             external_id = get_mbc_external_id(m)
-            s += m.name + ' (' + external_id + ')'
+            s += '[' + external_id + '] ' + m.name
             i += 1
             if i < len(malwares):
                 s += ', '
@@ -138,7 +154,7 @@ def print_obj_details(obj):
     print('\nDescription:\t' + obj.description + '\n')
 
     if obj.external_references:
-        print('External references:')
+        print('\nExternal references:')
         for ref in obj.external_references:
             if ref.url:
                 print('- ' + ref.url)
