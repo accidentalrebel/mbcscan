@@ -88,6 +88,21 @@ def print_behaviors_list(behavior_list, can_show_all=False):
             
         i+=1
 
+def wrap_value_text(to_split):
+    splitted = textwrap.wrap(to_split, 65)
+    i = 0
+    j = 0
+    s = ''
+    for split in splitted:
+        if i > 0:
+            s += '\t\t'
+        s += split
+        if j < len(splitted) - 1:
+            s += '\n'
+        i += 1
+        j += 1
+    return s
+
 def print_obj_details(obj):
     if not obj:
         print('[ERROR] Obj not provided.')
@@ -124,42 +139,39 @@ def print_obj_details(obj):
         s += 'None'
     print(s)
 
-    s = 'Related:\t'
+
     if parent:
         behaviors = get_children_of_behavior(g_src, parent.id)
         i = 0
+        s = ''
         for b in behaviors:
             obj_eid = get_mbc_external_id(b)
             s += '[' + obj_eid + '] ' + b.name
+            i += 1
             if i < len(behaviors):
                 s += ', '
-    else:
-        s += 'None'
-    print(s)
 
-    s = 'Samples:\t'                
+        print('Related:\t' + wrap_value_text(s))
+    else:
+        print('Related:\tNone')
+
     malwares = get_malwares_using_behavior(g_src, obj.id)
     if malwares:
         i = 0
+        s = ''
         for m in malwares:
             external_id = get_mbc_external_id(m)
             s += '[' + external_id + '] ' + m.name
             i += 1
             if i < len(malwares):
                 s += ', '
+                
+        print('Samples:\t' + wrap_value_text(s) + '\n')
     else:
-        s += 'None'
-    print(s)
+        print('Samples:\tNone\n')
 
     if hasattr(obj, 'description'):
-        desc_splitted = textwrap.wrap(obj.description, 65)
-        s = '\nDescription:\t'
-        i = 0
-        for d in desc_splitted:
-            if i > 0:
-                s += '\t\t'
-            s += d + '\n'
-            i += 1
+        s = 'Description:\t' + wrap_value_text(obj.description) + '\n'
         print(s)
 
     if obj.external_references:
