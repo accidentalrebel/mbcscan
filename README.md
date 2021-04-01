@@ -33,19 +33,19 @@ $ ./mbcscan.py -i test.bin
 ================================================================================
 Behaviors list:
 ================================================================================
-[0] Anti-Static Analysis::Argument Obfuscation (B0012.001)
-[1] Communication Micro-objective::Connect Pipe::Interprocess Communication (C0003.002)
-[2] Communication Micro-objective::Read Pipe::Interprocess Communication (C0003.003)
-[3] Communication Micro-objective::Write Pipe::Interprocess Communication (C0003.004)
-[4] File System Micro-objective::Copy File (C0045)
-[5] File System Micro-objective::Delete File (C0047)
-[6] File System Micro-objective::Read File (C0051)
-[7] File System Micro-objective::Writes File (C0052)
-[8] Operating System Micro-objective::Set Variable::Environment Variable (C0034.001)
-[9] Process Micro-objective::Allocate Thread Local Storage (C0040)
-[10] Process Micro-objective::Create Mutex (C0042)
-[11] Process Micro-objective::Set Thread Local Storage Value (C0041)
-[12] Process Micro-objective::Terminate Process (C0018)
+(0) [B0012.001] Anti-Static Analysis::Argument Obfuscation
+(1) [C0003.002] Communication Micro-objective::Connect Pipe::Interprocess Communication
+(2) [C0003.003] Communication Micro-objective::Read Pipe::Interprocess Communication
+(3) [C0003.004] Communication Micro-objective::Write Pipe::Interprocess Communication
+(4) [C0045]     File System Micro-objective::Copy File
+(5) [C0047]     File System Micro-objective::Delete File
+(6) [C0051]     File System Micro-objective::Read File
+(7) [C0052]     File System Micro-objective::Writes File
+(8) [C0034.001] Operating System Micro-objective::Set Variable::Environment Variable
+(9) [C0040]     Process Micro-objective::Allocate Thread Local Storage
+(10) [C0042]    Process Micro-objective::Create Mutex
+(11) [C0041]    Process Micro-objective::Set Thread Local Storage Value
+(12) [C0018]    Process Micro-objective::Terminate Process
     __  ___ ____   ______ _____                   
    /  |/  // __ ) / ____// ___/ _____ ____ _ ____ 
   / /|_/ // __  |/ /     \__ \ / ___// __ `// __ \
@@ -53,7 +53,6 @@ Behaviors list:
 /_/  /_//_____/ \____/ /____/ \___/ \__,_//_/ /_/ 
 
     Type "?" r "help" to display help.
-(mbcscan) Type command here
 ```
 
 Type the help command to find out available commands:
@@ -69,40 +68,50 @@ a  exit  help  l  list  q  query  s  select
 View the details of a specific entry with the `select` command.
 
 ```console
-mbcscan) select 10
+(mbcscan) s 3
 
 ================================================================================
-Name:           Create Mutex
+Name:           Write Pipe::Interprocess Communication
 ================================================================================
-MBC_ID:         attack-pattern--f21fda77-e6ff-4351-87d9-0e2f5780a1c3
-Objectives:     Process Micro-objective (OC0003)
-Parent:         None
+MBC_ID:         attack-pattern--0947cd27-a2b6-466f-b47c-4d36e4ce06cb
+External ID:    C0003.004
+Objectives:     [OC0006] Communication Micro-objective
+Parent:         [C0003] Interprocess Communication
+Related:        [C0003.004] Write Pipe::Interprocess Communication, [C0003.001]
+                Create Pipe::Interprocess Communication, [C0003.002] Connect
+                Pipe::Interprocess Communication, [C0003.003] Read
+                Pipe::Interprocess Communication
 Samples:        None
 
-Description:    Micro-behaviors related to processes.
-
 External references:
-- https://github.com/MBCProject/mbc-markdown/blob/v2.1/micro-behaviors/process/README.md
+- https://github.com/MBCProject/mbc-markdown/blob/v2.1/micro-behaviors/communication/inter-process.md
 --------------------------------------------------------------------------------
 ```
 
 To view details of other entries, use the `query` command.
 
 ```console
-(mbcscan) query OC0004
-
+(mbcscan) q x0004
 ================================================================================
-Name:           Data Micro-objective
+Name:           Dark Comet
 ================================================================================
-MBC_ID:         x-mitre-tactic--408ef4fa-de24-489a-ac9e-1f51af84bf5d
+MBC_ID:         malware--19d14868-ff81-4c8c-9a6a-c57baf7e7f52
+External ID:    X0004
 Objectives:     None
 Parent:         None
+Related:        None
 Samples:        None
 
-Description:    Micro-behaviors related to malware manipulating data.
+Description:    A Remote Access Trojan (RAT) that allows a user to control the
+                system via a GUI. It has many features which allows a user to use
+                it as administrative remote help tool; however, DarkComet has
+                many features which can be used maliciously. DarkComet is
+                commonly used to spy on the victims by taking screen captures,
+                key-logging, or password stealing.
 
 External references:
-- https://github.com/MBCProject/mbc-markdown/blob/v2.1/micro-behaviors/data/README.md
+- https://github.com/MBCProject/mbc-markdown/blob/v2.1/xample-malware/dark-comet.md
+- https://en.wikipedia.org/wiki/DarkComet
 --------------------------------------------------------------------------------
 ```
 
@@ -119,34 +128,54 @@ Behaviors list:
 Name:           Argument Obfuscation
 ================================================================================
 MBC_ID:         attack-pattern--772c8a08-0dbb-4059-8459-7ac1193840bc
-Objectives:     Anti-Static Analysis (OB0002)
-Parent:         None
+External ID:    B0012.001
+Objectives:     [OB0002] Anti-Static Analysis
+Parent:         [B0012] Disassembler Evasion
+Related:        [B0012.002] Conditional Misdirection, [B0012.001] Argument
+                Obfuscation, [B0012.005] VBA Stomping, [B0012.003] Value
+                Dependent Jumps, [B0012.004] Variable Recomposition
 Samples:        None
 
-Description:    Behaviors and code characteristics that prevent static analysis or make it more difficult. Simple static analysis identifies features such as embedded strings, header information, hash values, and file metadata (e.g., creation date). More involved static analysis involves the disassembly of the binary code.
-
-Two primary resources for anti-static analysis behaviors are [[1]](#1) and [[2]](#2).
+Description:    Simple number or string arguments to API calls are calculated at
+                runtime, making linear disassembly more difficult.
 
 External references:
-- http://unprotect.tdgt.org/index.php/Unprotect_Project
-- https://github.com/knowmalware/InDepthUnpacking
-- https://github.com/MBCProject/mbc-markdown/blob/v2.1/anti-static-analysis/README.md
+- https://github.com/MBCProject/mbc-markdown/blob/v2.1/anti-static-analysis/evade-disassembler.md
 --------------------------------------------------------------------------------
 
 ================================================================================
 Name:           Connect Pipe::Interprocess Communication
 ================================================================================
 MBC_ID:         attack-pattern--c1e8e932-3864-444e-b56b-70292bb7695c
-Objectives:     Communication Micro-objective (OC0006)
-Parent:         None
+External ID:    C0003.002
+Objectives:     [OC0006] Communication Micro-objective
+Parent:         [C0003] Interprocess Communication
+Related:        [C0003.004] Write Pipe::Interprocess Communication, [C0003.001]
+                Create Pipe::Interprocess Communication, [C0003.002] Connect
+                Pipe::Interprocess Communication, [C0003.003] Read
+                Pipe::Interprocess Communication
 Samples:        None
 
-Description:    Micro-behaviors that enable malware to communicate.
-
 External references:
-- https://github.com/MBCProject/mbc-markdown/blob/v2.1/micro-behaviors/communication/README.md
+- https://github.com/MBCProject/mbc-markdown/blob/v2.1/micro-behaviors/communication/inter-process.md
 --------------------------------------------------------------------------------
 
+================================================================================
+Name:           Read Pipe::Interprocess Communication
+================================================================================
+MBC_ID:         attack-pattern--d6e1b096-1595-47e7-8230-223aa9cad622
+External ID:    C0003.003
+Objectives:     [OC0006] Communication Micro-objective
+Parent:         [C0003] Interprocess Communication
+Related:        [C0003.004] Write Pipe::Interprocess Communication, [C0003.001]
+                Create Pipe::Interprocess Communication, [C0003.002] Connect
+                Pipe::Interprocess Communication, [C0003.003] Read
+                Pipe::Interprocess Communication
+Samples:        None
+
+External references:
+- https://github.com/MBCProject/mbc-markdown/blob/v2.1/micro-behaviors/communication/inter-process.md
+--------------------------------------------------------------------------------
 ...
 ```
 
@@ -158,7 +187,8 @@ External references:
 
 ## How to Install
 
-First install, `flare-capa` via `pip install flare-capa`. MBCScan uses Capa as a Python library.
+* Install `flare-capa` via `pip install flare-capa`. MBCScan uses Capa as a Python library.
+* Install `GitPython` via `pip install GitPython`. This is used by MBCScan to retrieve needed libraries and data.
 
 Clone the repository and then run the `mbcscan.py` script. The script would automatically download and configure it's dependencies.
 
