@@ -22,9 +22,19 @@ import cmd, sys
 import mbclib
 import re
 import textwrap
-from capalib.capalib import *
-from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id, get_children_of_behavior
+import os
+import json
+import collections
+import capa.main
+import capa.rules
+import capa.engine
+import capa.render
+import capa.features
+import capa.render.utils as rutils
 from argparse import ArgumentParser
+from capa.engine import *
+from capa.render import convert_capabilities_to_result_document
+from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id, get_children_of_behavior
 
 g_args = None
 g_behaviors_list = None
@@ -182,6 +192,62 @@ def print_obj_details(obj):
 
     print(('-' * 80))
 
+
+def capa_render_mbc(doc, ostream):
+    ostream["MBC"] = dict()
+    objectives = collections.defaultdict(set)
+    for rule in rutils.capability_rules(doc):
+        if not rule["meta"].get("mbc"):
+            continue
+
+        mbcs = rule["meta"]["mbc"]
+        if not isinstance(mbcs, list):
+            raise ValueError("invalid rule: MBC mapping is not a list")
+
+        for mbc in mbcs:
+            objective, _, rest = mbc.partition("::")
+            if "::" in rest:
+                behavior, _, rest = rest.partition("::")
+                method, _, id = rest.rpartition(" ")
+                objectives[objective].add((behavior, method, id))
+            else:
+                behavior, _, id = rest.rpartition(" ")
+                objectives[objective].add((behavior, id))
+
+    for objective, behaviors in sorted(objectives.items()):
+        inner_rows = []
+        for spec in sorted(behaviors):
+            if len(spec) == 2:
+                behavior, id = spec
+                inner_rows.append("%s %s" % (behavior, id))
+            elif len(spec) == 3:
+                behavior, method, id = spec
+                inner_rows.append("%s::%s %s" % (behavior, method, id))
+            else:
+                raise RuntimeError("unexpected MBC spec format")
+        ostream["MBC"].setdefault(objective.upper(), inner_rows)
+
+def capa_render_dictionary(doc):
+    ostream = dict()
+    capa_render_mbc(doc, ostream)
+    return ostream
+
+def capa_details(file_path, output_format="dictionary"):
+    rules_path = os.path.expanduser('~') + "/.mbcscan/capalib/capa-rules/"
+    rules = capa.main.get_rules(rules_path, disable_progress=True)
+    rules = capa.rules.RuleSet(rules)
+    
+    extractor = capa.main.get_extractor(file_path, "auto", capa.main.BACKEND_VIV, disable_progress=True)
+    capabilities, counts = capa.main.find_capabilities(rules, extractor, disable_progress=True)
+
+    meta = capa.main.collect_metadata("", file_path, rules_path, "auto", extractor)
+    meta["analysis"].update(counts)
+
+    doc = convert_capabilities_to_result_document(meta, rules, capabilities)
+    capa_output = capa_render_dictionary(doc)
+
+    return capa_output
+
 class MBCScanShell(cmd.Cmd):
     intro = """    __  ___ ____   ______ _____                   
    /  |/  // __ ) / ____// ___/ _____ ____ _ ____ 
@@ -248,11 +314,9 @@ if __name__ == '__main__':
                         '--all',
                         action='store_true',
                         help='List all findings in one page.')
-    # parser.add_argument('-q',
-    #                     '--query',
-    #                     help='The external ID to search for.')
 
     g_args = parser.parse_args()
+
 
     print('[INFO] Setting up mbc database...')
     
@@ -260,7 +324,7 @@ if __name__ == '__main__':
     g_behaviors_list = []
 
     print('[INFO] Scanning ' + g_args.file + '...')
-    
+
     capa = capa_details(g_args.file)
 
     if len(capa['MBC']) > 0:
@@ -278,4 +342,3 @@ if __name__ == '__main__':
     
     if g_args.interactive:
         MBCScanShell().cmdloop()
-
