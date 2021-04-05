@@ -18,6 +18,8 @@ if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
                 filepath = os.path.join(root, file)
                 os.remove(filepath)
 
+import sys
+sys.path.append(os.path.expanduser('~') + '/.mbcscan')
 import cmd, sys
 import mbclib
 import re
@@ -320,7 +322,7 @@ if __name__ == '__main__':
 
     print('[INFO] Setting up mbc database...')
     
-    g_src = setup_src(os.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2/')
+    g_src = setup_src(os.path.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2/')
     g_behaviors_list = []
 
     print('[INFO] Scanning ' + g_args.file + '...')
