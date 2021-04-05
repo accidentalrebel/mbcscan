@@ -2,19 +2,19 @@
 import os
 from git.repo.base import Repo
 
-if not os.path.isdir('./mbclib'):
+if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/mbclib'):
     print('[INFO] Installing mbclib...')
-    Repo.clone_from("https://github.com/accidentalrebel/mbclib", "mbclib")
-if not os.path.isdir('./mbclib/mbc-stix2'):
+    Repo.clone_from('https://github.com/accidentalrebel/mbclib', os.path.expanduser('~') + '/.mbcscan/mbclib')
+if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2'):
     print('[INFO] Installing mbc-stix2...')
-    Repo.clone_from("https://github.com/MBCProject/mbc-stix2", "./mbclib/mbc-stix2")
-if not os.path.isdir('./capalib/capa-rules'):
+    Repo.clone_from('https://github.com/MBCProject/mbc-stix2', os.path.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2')
+if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
     print('[INFO] Installing capa-rules...')
-    Repo.clone_from("https://github.com/fireeye/capa-rules", "./capalib/capa-rules")
+    Repo.clone_from('https://github.com/fireeye/capa-rules', os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules')
 
-    for root, dirs, files in os.walk("./capalib/capa-rules"):
+    for root, dirs, files in os.walk(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
         for file in files:
-            if not file.endswith(".yml"):
+            if not file.endswith('.yml'):
                 filepath = os.path.join(root, file)
                 os.remove(filepath)
 
@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
     print('[INFO] Setting up mbc database...')
     
-    g_src = setup_src('./mbclib/mbc-stix2/')
+    g_src = setup_src(os.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2/')
     g_behaviors_list = []
 
     print('[INFO] Scanning ' + g_args.file + '...')
