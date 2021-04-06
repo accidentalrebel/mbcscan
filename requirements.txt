@@ -1,3 +1,4 @@
+mbclib
 flare-capa
 GitPython
-stix2
+

@@ -2,12 +2,9 @@
 import os
 from git.repo.base import Repo
 
-if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/mbclib'):
-    print('[INFO] Installing mbclib...')
-    Repo.clone_from('https://github.com/accidentalrebel/mbclib', os.path.expanduser('~') + '/.mbcscan/mbclib')
-if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2'):
+if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/mbc-stix2'):
     print('[INFO] Installing mbc-stix2...')
-    Repo.clone_from('https://github.com/MBCProject/mbc-stix2', os.path.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2')
+    Repo.clone_from('https://github.com/MBCProject/mbc-stix2', os.path.expanduser('~') + '/.mbcscan/mbc-stix2')
 if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
     print('[INFO] Installing capa-rules...')
     Repo.clone_from('https://github.com/fireeye/capa-rules', os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules')
@@ -21,7 +18,6 @@ if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
 import sys
 sys.path.append(os.path.expanduser('~') + '/.mbcscan')
 import cmd, sys
-import mbclib
 import re
 import textwrap
 import os
@@ -36,7 +32,8 @@ import capa.render.utils as rutils
 from argparse import ArgumentParser
 from capa.engine import *
 from capa.render import convert_capabilities_to_result_document
-from mbclib.mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id, get_children_of_behavior
+import mbclib
+from mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id, get_children_of_behavior
 
 g_args = None
 g_behaviors_list = None
@@ -54,13 +51,13 @@ def get_obj_cached(src, dict_to_check, id_to_check, func_to_call):
     return obj
     
 def get_behavior_by_external_id(src, behavior_external_id):
-    return get_obj_cached(src, g_behaviors_dict, behavior_external_id, mbclib.mbclib.get_behavior_by_external_id)
+    return get_obj_cached(src, g_behaviors_dict, behavior_external_id, mbclib.get_behavior_by_external_id)
 
 def get_objective_by_shortname(src, phase_shortname):
-    return get_obj_cached(src, g_objectives_dict, phase_shortname, mbclib.mbclib.get_objective_by_shortname)
+    return get_obj_cached(src, g_objectives_dict, phase_shortname, mbclib.get_objective_by_shortname)
 
 def get_malwares_using_behavior(src, behavior_id):
-    return get_obj_cached(src, g_malwares_dict, behavior_id, mbclib.mbclib.get_malwares_using_behavior)
+    return get_obj_cached(src, g_malwares_dict, behavior_id, mbclib.get_malwares_using_behavior)
 
 def query(query_str):
     obj = get_behavior_by_external_id(g_src, query_str.upper())
@@ -322,7 +319,7 @@ if __name__ == '__main__':
 
     print('[INFO] Setting up mbc database...')
     
-    g_src = setup_src(os.path.expanduser('~') + '/.mbcscan/mbclib/mbc-stix2/')
+    g_src = setup_src(os.path.expanduser('~') + '/.mbcscan/mbc-stix2/')
     g_behaviors_list = []
 
     print('[INFO] Scanning ' + g_args.file + '...')
