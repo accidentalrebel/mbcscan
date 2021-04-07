@@ -187,15 +187,11 @@ External references:
 
 ## How to Install
 
-* Install `flare-capa` via `pip install flare-capa`. MBCScan uses Capa as a Python library.
-* Install `GitPython` via `pip install GitPython`. This is used by MBCScan to retrieve needed libraries and data.
-
-Clone the repository and then run the `mbcscan.py` script. The script would automatically download and configure it's dependencies.
-
 ```console
 $ git clone https://github.com/accidentalrebel/mbcscan.git
-$ cd mbscan/
-$ python3 ./mbscan.py
+$ cd mbcscan/
+$ pip install -r requirements.txt
+$ ./mbcscan.py
 [INFO] Installing mbclib...
 [INFO] Installing mbc-stix2...
 [INFO] Installing capa-rules...
