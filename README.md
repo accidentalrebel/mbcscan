@@ -1,6 +1,6 @@
 # MBCScan
 
-Scans a malware file and lists down the related MBC (Malware Behavior Catalog) details.
+Scans a malware file and lists down the related MBC ([Malware Behavior Catalog](https://github.com/MBCProject)) details.
 
 ## Help
 

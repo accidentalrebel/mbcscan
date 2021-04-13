@@ -90,10 +90,10 @@ def print_behaviors_list(behavior_list, can_show_all=False):
         if can_show_all:
             print('')
             print_obj_details(behavior)
-        else:
+        elif hasattr(behavior, 'kill_chain_phases'):
             phase_name = behavior.kill_chain_phases[0].phase_name
             obj = get_objective_by_shortname(g_src, phase_name)
-            print('(' + str(i) + ') [' + behavior_external_id + ']\t' + obj.name + '::' + behavior.name)
+            print(str(i) + ') [' + behavior_external_id + ']\t ' + obj.name + '::' + behavior.name)
             
         i+=1
 
@@ -240,7 +240,6 @@ def capa_details(file_path, output_format="dictionary"):
     capabilities, counts = capa.main.find_capabilities(rules, extractor, disable_progress=True)
 
     meta = capa.main.collect_metadata("", file_path, rules_path, "auto", extractor)
-    meta["analysis"].update(counts)
 
     doc = convert_capabilities_to_result_document(meta, rules, capabilities)
     capa_output = capa_render_dictionary(doc)
