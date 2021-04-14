@@ -2,19 +2,6 @@
 import os
 from git.repo.base import Repo
 
-if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/mbc-stix2'):
-    print('[INFO] Installing mbc-stix2...')
-    Repo.clone_from('https://github.com/MBCProject/mbc-stix2', os.path.expanduser('~') + '/.mbcscan/mbc-stix2')
-if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
-    print('[INFO] Installing capa-rules...')
-    Repo.clone_from('https://github.com/fireeye/capa-rules', os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules')
-
-    for root, dirs, files in os.walk(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
-        for file in files:
-            if not file.endswith('.yml'):
-                filepath = os.path.join(root, file)
-                os.remove(filepath)
-
 import sys
 sys.path.append(os.path.expanduser('~') + '/.mbcscan')
 import cmd, sys
@@ -71,13 +58,13 @@ def query(query_str):
 def select(index):
     selection_index = int(index)
     if selection_index >= len(g_behaviors_dict.values()):
-        print('[Error] Selection index ' + str(selection_index) + ' does not exist.')
+        print_verbose('[Error] Selection index ' + str(selection_index) + ' does not exist.')
         return 
     
     behavior = list(g_behaviors_dict.values())[selection_index]
-    print('')
+    print_verbose('')
     print_obj_details(behavior)
-    print('')
+    print_verbose('')
 
 def print_behaviors_list(behavior_list, can_show_all=False):
     i = 0
@@ -114,7 +101,7 @@ def wrap_value_text(to_split):
 
 def print_obj_details(obj):
     if not obj:
-        print('[ERROR] Obj not provided.')
+        print_verbose('[ERROR] Obj not provided.')
         raise SystemExit(1)
 
     print(('=' * 80) + '\n' \
@@ -147,7 +134,6 @@ def print_obj_details(obj):
     else:
         s += 'None'
     print(s)
-
 
     if parent:
         behaviors = get_children_of_behavior(g_src, parent.id)
@@ -274,12 +260,12 @@ class MBCScanShell(cmd.Cmd):
     def do_select(self, arg):
         'Selects and displays the details of a particular behavior.'
         if not arg:
-            print('[ERROR] No selection index number specified. Try again.')
+            print_verbose('[ERROR] No selection index number specified. Try again.')
         else:
             try:
                 select(arg)
             except ValueError:
-                print('[ERROR] Selection index should be a number. Try again.')
+                print_verbose('[ERROR] Selection index should be a number. Try again.')
 
     def do_s(self, arg):
         'Selects and displays the details of a particular behavior.'
@@ -300,6 +286,10 @@ class MBCScanShell(cmd.Cmd):
         'Exits the program.'
         return True
 
+def print_verbose(str):
+    if g_args.verbose:
+        print(str)
+
 if __name__ == '__main__':
     parser = ArgumentParser(description='Scans a malware file and lists down the related MBC (Malware Behavior Catalog) details.')
     parser.add_argument('file',
@@ -312,16 +302,32 @@ if __name__ == '__main__':
                         '--all',
                         action='store_true',
                         help='List all findings in one page.')
+    parser.add_argument('-v',
+                        '--verbose',
+                        action='store_true',
+                        help='Enable verbose print statements.')
 
     g_args = parser.parse_args()
 
+    if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/mbc-stix2'):
+        print_verbose('[INFO] Installing mbc-stix2...')
+        Repo.clone_from('https://github.com/MBCProject/mbc-stix2', os.path.expanduser('~') + '/.mbcscan/mbc-stix2')
+    if not os.path.isdir(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
+        print_verbose('[INFO] Installing capa-rules...')
+        Repo.clone_from('https://github.com/fireeye/capa-rules', os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules')
 
-    print('[INFO] Setting up mbc database...')
+        for root, dirs, files in os.walk(os.path.expanduser('~') + '/.mbcscan/capalib/capa-rules'):
+            for file in files:
+                if not file.endswith('.yml'):
+                    filepath = os.path.join(root, file)
+                    os.remove(filepath)
+
+    print_verbose('[INFO] Setting up mbc database...')
     
     g_src = setup_src(os.path.expanduser('~') + '/.mbcscan/mbc-stix2/')
     g_behaviors_list = []
 
-    print('[INFO] Scanning ' + g_args.file + '...')
+    print_verbose('[INFO] Scanning ' + g_args.file + '...')
 
     capa = capa_details(g_args.file)
 
@@ -333,7 +339,7 @@ if __name__ == '__main__':
                     external_id = external_ids[0]
                     g_behaviors_list.append(external_id)
     else:
-        print('No MBC determined from file.')
+        print_verbose('No MBC determined from file.')
         sys.exit()
 
     print_behaviors_list(g_behaviors_list, g_args.all)

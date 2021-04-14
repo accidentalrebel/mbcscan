@@ -17,6 +17,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -i, --interactive     Run program interactively.
   -a, --all             List all findings in one page.
+  -v, --verbose         Enable verbose print statements
 ```
 
 ## Usage
@@ -27,7 +28,7 @@ It is recommended to run the program interactively:
 $ sha256sum test.bin
 f8ad6ecb49e68ac7cf261551f01d8ef3348e347cf4239368a26bb2b3ec372904  test.bin
 
-$ ./mbcscan.py -i test.bin
+$ ./mbcscan.py -i -v test.bin
 [INFO] Setting up mbc database...
 [INFO] Scanning test.bin...
 ================================================================================
@@ -118,7 +119,7 @@ External references:
 If you don't want to run the program interactively and just want to list down all behaviors at a glance:
 
 ```console
-$ ./mbcscan.py -a test.bin[INFO] Setting up mbc database...
+$ ./mbcscan.py -a -v test.bin[INFO] Setting up mbc database...
 [INFO] Scanning test.bin...
 ================================================================================
 Behaviors list:
@@ -191,7 +192,7 @@ External references:
 $ git clone https://github.com/accidentalrebel/mbcscan.git
 $ cd mbcscan/
 $ pip install -r requirements.txt
-$ ./mbcscan.py
+$ ./mbcscan.py -v
 [INFO] Installing mbclib...
 [INFO] Installing mbc-stix2...
 [INFO] Installing capa-rules...
