@@ -218,6 +218,10 @@ def capa_render_dictionary(doc):
     return ostream
 
 def capa_details(file_path, output_format="dictionary"):
+    if not g_args.verbose:
+        sys.stdout = open(os.devnull, "w")
+        sys.stderr = open(os.devnull, "w")
+    
     rules_path = os.path.expanduser('~') + "/.mbcscan/capalib/capa-rules/"
     rules = capa.main.get_rules(rules_path, disable_progress=True)
     rules = capa.rules.RuleSet(rules)
@@ -229,6 +233,10 @@ def capa_details(file_path, output_format="dictionary"):
 
     doc = convert_capabilities_to_result_document(meta, rules, capabilities)
     capa_output = capa_render_dictionary(doc)
+
+    if not g_args.verbose:
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
 
     return capa_output
 
