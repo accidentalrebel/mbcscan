@@ -68,9 +68,9 @@ def select(index):
 
 def print_behaviors_list(behavior_list, can_show_all=False):
     i = 0
-    print(('=' * 80) + '\n'+ \
-          'Behaviors list:\n' + \
-          ('=' * 80))
+    print(('=' * 60) + '\n'+ \
+          'MBC behaviors list (github.com/accidentalrebel/mbcscan):\n' + \
+          ('=' * 60))
     
     for behavior_external_id in behavior_list:
         behavior = get_behavior_by_external_id(g_src, behavior_external_id)
