@@ -18,7 +18,7 @@ import capa.features
 import capa.render.utils as rutils
 from argparse import ArgumentParser
 from capa.engine import *
-from capa.render import convert_capabilities_to_result_document
+from capa.render.result_document import convert_capabilities_to_result_document
 import mbclib
 from mbclib import setup_src, get_mbc_external_id, get_parent_behavior, get_objective_by_external_id, get_malware_by_external_id, get_children_of_behavior
 
@@ -33,7 +33,7 @@ def get_obj_cached(src, dict_to_check, id_to_check, func_to_call):
         obj = dict_to_check[id_to_check]
     else:
         obj = func_to_call(src, id_to_check)
-        dict_to_check[id_to_check] = obj
+    dict_to_check[id_to_check] = obj
     
     return obj
     
@@ -190,14 +190,14 @@ def capa_render_mbc(doc, ostream):
             raise ValueError("invalid rule: MBC mapping is not a list")
 
         for mbc in mbcs:
-            objective, _, rest = mbc.partition("::")
-            if "::" in rest:
-                behavior, _, rest = rest.partition("::")
-                method, _, id = rest.rpartition(" ")
-                objectives[objective].add((behavior, method, id))
+            objective = mbc['objective']
+            behavior = mbc['behavior']
+            method = mbc['method']
+            id = mbc['id']
+            if method == "":
+                  objectives[objective].add((behavior, id))
             else:
-                behavior, _, id = rest.rpartition(" ")
-                objectives[objective].add((behavior, id))
+                  objectives[objective].add((behavior, method, id))
 
     for objective, behaviors in sorted(objectives.items()):
         inner_rows = []
@@ -222,14 +222,14 @@ def capa_details(file_path, output_format="dictionary"):
         sys.stdout = open(os.devnull, "w")
         sys.stderr = open(os.devnull, "w")
     
-    rules_path = os.path.expanduser('~') + "/.mbcscan/capalib/capa-rules/"
-    rules = capa.main.get_rules(rules_path, disable_progress=True)
+    rules_path = os.path.expanduser('~') + "/.mbcscan/capalib/capa-rules"
+    rules = capa.main.get_rules([rules_path], disable_progress=True)
     rules = capa.rules.RuleSet(rules)
     
-    extractor = capa.main.get_extractor(file_path, "auto", capa.main.BACKEND_VIV, disable_progress=True)
+    extractor = capa.main.get_extractor(file_path, "auto", capa.main.BACKEND_VIV, [], disable_progress=True)
     capabilities, counts = capa.main.find_capabilities(rules, extractor, disable_progress=True)
 
-    meta = capa.main.collect_metadata("", file_path, rules_path, "auto", extractor)
+    meta = capa.main.collect_metadata("", file_path, rules_path, extractor)
 
     doc = convert_capabilities_to_result_document(meta, rules, capabilities)
     capa_output = capa_render_dictionary(doc)
@@ -328,11 +328,11 @@ if __name__ == '__main__':
             for file in files:
                 if not file.endswith('.yml'):
                     filepath = os.path.join(root, file)
-                    os.remove(filepath)
+                    ## os.remove(filepath)
 
     print_verbose('[INFO] Setting up mbc database...')
     
-    g_src = setup_src(os.path.expanduser('~') + '/.mbcscan/mbc-stix2/')
+    g_src = setup_src(os.path.expanduser('~') + '/.mbcscan/mbc-stix2/mbc/')
     g_behaviors_list = []
 
     print_verbose('[INFO] Scanning ' + g_args.file + '...')
@@ -342,10 +342,9 @@ if __name__ == '__main__':
     if len(capa['MBC']) > 0:
         for mbc_key in capa['MBC'].keys():
             for d in capa['MBC'][mbc_key]:
-                external_ids = re.findall('\[(.*?)\]', d)
-                if len(external_ids) > 0:
-                    external_id = external_ids[0]
-                    g_behaviors_list.append(external_id)
+                external_id = str(d).split(" ")[-1]
+                if external_id:
+                   g_behaviors_list.append(external_id)
     else:
         print_verbose('No MBC determined from file.')
         sys.exit()
