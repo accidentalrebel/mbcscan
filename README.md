@@ -191,7 +191,7 @@ External references:
 ```console
 $ git clone https://github.com/accidentalrebel/mbcscan.git
 $ cd mbcscan/
-$ pip install -r requirements.txt
+$ pip install -c constraints.txt -r requirements.txt
 $ ./mbcscan.py -v
 [INFO] Installing mbclib...
 [INFO] Installing mbc-stix2...
