@@ -222,8 +222,8 @@ def capa_details(file_path, output_format="dictionary"):
         sys.stdout = open(os.devnull, "w")
         sys.stderr = open(os.devnull, "w")
     
-    rules_path = os.path.expanduser('~') + "/.mbcscan/capalib/capa-rules"
-    rules = capa.main.get_rules([rules_path], disable_progress=True)
+    rules_path = os.path.expanduser('~') + "\.mbcscan\capalib\capa-rules"
+    rules = capa.main.get_rules(rules_path, disable_progress=True)
     rules = capa.rules.RuleSet(rules)
     
     extractor = capa.main.get_extractor(file_path, "auto", capa.main.BACKEND_VIV, [], disable_progress=True)
